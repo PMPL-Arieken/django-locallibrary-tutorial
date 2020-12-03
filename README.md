@@ -1,7 +1,7 @@
 # Django Local Library
 
 ![Unit Test](https://github.com/PMPL-Arieken/django-locallibrary-tutorial/workflows/Unit%20Test/badge.svg)
-![Coverage](https://codecov.io/github/PMPL-Arieken/django-locallibrary-tutorial/coverage.svg)
+[![Coverage](https://codecov.io/github/PMPL-Arieken/django-locallibrary-tutorial/coverage.svg)](https://codecov.io/github/PMPL-Arieken/django-locallibrary-tutorial)
 
 Tutorial "Local Library" website written in Django.
 
