@@ -52,7 +52,7 @@ Functional Test
 
 Coverage
 
-      coverage run --include="./*" --omit="manage.py,locallibrary/*,venv/*" manage.py test catalog
+      coverage run --include="./*" --omit="manage.py,locallibrary/*,venv/*" manage.py test catalog register
 
 To view coverage result, execute the following commands:
 

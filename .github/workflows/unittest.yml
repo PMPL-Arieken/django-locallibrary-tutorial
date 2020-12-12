@@ -27,7 +27,7 @@ jobs:
           python manage.py test catalog
       - name: Coverage Run
         run: |
-          coverage run --include="./*" --omit="manage.py,locallibrary/*,venv/*" manage.py test catalog
+          coverage run --include="./*" --omit="manage.py,locallibrary/*,venv/*" manage.py test catalog register
           coverage report -m
           coverage xml
       - name: Upload coverage to Codecov
