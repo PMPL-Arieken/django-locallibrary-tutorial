@@ -139,7 +139,7 @@ import datetime
 from django.contrib.auth.decorators import login_required, permission_required
 
 # from .forms import RenewBookForm
-from catalog.forms import RenewBookForm
+from catalog.forms import RenewBookForm, ReturnBookForm
 
 
 @login_required
@@ -175,6 +175,40 @@ def renew_book_librarian(request, pk):
     }
 
     return render(request, 'catalog/book_renew_librarian.html', context)
+
+
+@login_required
+@permission_required('catalog.can_mark_returned', raise_exception=True)
+def return_book_librarian(request, pk):
+    """View function for returning a specific BookInstance by librarian."""
+    book_instance = get_object_or_404(BookInstance, pk=pk)
+
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = ReturnBookForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            book_instance.status = 'a'
+            book_instance.borrower = None
+            book_instance.save()
+
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('all-borrowed'))
+
+    # If this is a GET (or any other method) create the default form
+    else:
+        form = ReturnBookForm(initial={'return_date': datetime.date.today()})
+
+    context = {
+        'form': form,
+        'book_instance': book_instance,
+    }
+
+    return render(request, 'catalog/book_return_librarian.html', context)
 
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView

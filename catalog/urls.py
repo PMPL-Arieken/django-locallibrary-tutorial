@@ -25,6 +25,7 @@ urlpatterns += [
 # Add URLConf for librarian to renew a book.
 urlpatterns += [
     path('book/<uuid:pk>/renew/', views.renew_book_librarian, name='renew-book-librarian'),
+    path('book/<uuid:pk>/return/', views.return_book_librarian, name='return-book-librarian'),
 ]
 
 
