@@ -1,0 +1,28 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>Borrow Book</h1>
+
+<p><strong>Title:</strong> {{ book.title }}</a></p>
+<p><strong>Author:</strong> <a href="{% url 'author-detail' book.author.pk %}">{{ book.author }}</a></p>
+<p><strong>Summary:</strong> {{ book.summary }}</p>
+<p><strong>ISBN:</strong> {{ book.isbn }}</p>
+<p><strong>Language:</strong> {{ book.language }}</p>
+<p><strong>Genre:</strong> {{ book.genre.all|join:", " }}</p>
+
+{% if book.is_available %}
+<form method="POST" action="{% url 'borrow' book.id %}">
+    {% csrf_token %}
+    <p><strong>Book Instance:</strong> {{ book.available_instance }}</p>
+    <p><strong>Due Back:</strong> {{ due_back }}</p>
+    <p><strong>Borrower:</strong> {{ user.username }}</p>
+
+    <input type="hidden" name='instance' value="{{ book.available_instance }}">
+    <input type="submit" value="Borrow Book">
+</form>
+{% else %}
+Book not available
+{% endif %}
+
+{% endblock %}

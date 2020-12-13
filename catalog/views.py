@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls.base import reverse
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
 from .models import Book, Author, BookInstance, Genre
+import datetime
 
 
 def index(request):
@@ -11,20 +15,25 @@ def index(request):
     num_books = Book.objects.all().count()
     num_instances = BookInstance.objects.all().count()
     # Available copies of books
-    num_instances_available = BookInstance.objects.filter(status__exact='a').count()
+    num_instances_available = BookInstance.objects.filter(
+        status__exact='a').count()
     num_authors = Author.objects.count()  # The 'all()' is implied by default.
 
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 0)
-    request.session['num_visits'] = num_visits+1
+    request.session['num_visits'] = num_visits + 1
 
     # Render the HTML template index.html with the data in the context variable.
     return render(
         request,
         'index.html',
-        context={'num_books': num_books, 'num_instances': num_instances,
-                 'num_instances_available': num_instances_available, 'num_authors': num_authors,
-                 'num_visits': num_visits},
+        context={
+            'num_books': num_books,
+            'num_instances': num_instances,
+            'num_instances_available': num_instances_available,
+            'num_authors': num_authors,
+            'num_visits': num_visits
+        },
     )
 
 
@@ -53,6 +62,46 @@ class AuthorDetailView(generic.DetailView):
     model = Author
 
 
+class BorrowBookView(generic.DetailView):
+    template_name = 'catalog/borrowbook.html'
+    model = Book
+    due_back = datetime.date.today() + datetime.timedelta(weeks=2)
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['due_back'] = self.due_back
+        return context
+
+    def post(self, request, *args, **kwargs):
+        instance_id = request.POST.get('instance')
+        book_instance = BookInstance.objects.get(id=instance_id)
+        if book_instance.status == 'a':
+            book_instance.due_back = self.due_back
+            book_instance.borrower = request.user
+            book_instance.status = 'o'
+            book_instance.save()
+            return redirect(reverse('borrow_success', args=[str(book_instance.id)]))
+        else:
+            return redirect(reverse('borrow_fail', args=[str(book_instance.id)]))
+
+
+
+class BorrowBookSuccessView(generic.DetailView):
+    template_name = 'catalog/borrowbook_success.html'
+    context_object_name = 'book_instance'
+    model = BookInstance
+    
+
+class BorrowBookFailView(generic.DetailView):
+    template_name = 'catalog/borrowbook_fail.html'
+    context_object_name = 'book_instance'
+    model = BookInstance
+
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -63,7 +112,8 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+        return BookInstance.objects.filter(borrower=self.request.user).filter(
+            status__exact='o').order_by('due_back')
 
 
 # Added as part of challenge!
@@ -78,7 +128,8 @@ class LoanedBooksAllListView(PermissionRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return BookInstance.objects.filter(status__exact='o').order_by('due_back')
+        return BookInstance.objects.filter(
+            status__exact='o').order_by('due_back')
 
 
 from django.shortcuts import get_object_or_404
@@ -114,7 +165,8 @@ def renew_book_librarian(request, pk):
 
     # If this is a GET (or any other method) create the default form
     else:
-        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
+        proposed_renewal_date = datetime.date.today() + datetime.timedelta(
+            weeks=3)
         form = RenewBookForm(initial={'renewal_date': proposed_renewal_date})
 
     context = {
@@ -139,7 +191,7 @@ class AuthorCreate(PermissionRequiredMixin, CreateView):
 
 class AuthorUpdate(PermissionRequiredMixin, UpdateView):
     model = Author
-    fields = '__all__' # Not recommended (potential security issue if more fields added)
+    fields = '__all__'  # Not recommended (potential security issue if more fields added)
     permission_required = 'catalog.can_mark_returned'
 
 

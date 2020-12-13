@@ -43,6 +43,15 @@ class Book(models.Model):
     # Genre class has already been defined so we can specify the object above.
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True)
     
+    @property
+    def is_available(self):
+        return self.bookinstance_set.all().filter(status='a')
+
+    @property
+    def available_instance(self):
+        inst = self.bookinstance_set.all().filter(status='a').first()
+        return str(inst.id)
+
     class Meta:
         ordering = ['title', 'author']
 
