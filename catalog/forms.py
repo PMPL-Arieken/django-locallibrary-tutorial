@@ -23,3 +23,22 @@ class RenewBookForm(forms.Form):
 
         # Remember to always return the cleaned data.
         return data
+
+class ReturnBookForm(forms.Form):
+    """Form for a librarian to renew books."""
+    return_date = forms.DateField(
+            help_text="Enter a date between borrow date and today.")
+
+    penalty = forms.IntegerField(
+            help_text="Penalty (in IDR).", 
+            initial=0)
+
+    def clean_return_date(self):
+        data = self.cleaned_data['return_date']
+
+        # Check date is not in future.
+        if data > datetime.date.today():
+            raise ValidationError(_('Invalid date - return in future'))
+
+        return data
+
