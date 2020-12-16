@@ -1,4 +1,4 @@
-name: Unit Test
+name: Main Workflow
 on:
   pull_request:
     branches:
@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - master
+      - setup-sonarqube
 jobs:
   build:
     runs-on: ubuntu-latest
