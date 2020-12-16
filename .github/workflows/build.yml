@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - master
+      - setup-sonarqube
 jobs:
   build:
     runs-on: ubuntu-latest
