@@ -11,9 +11,11 @@ class TestBorrowed(FunctionalTest):
     def setUp(self):
         super().setUp()
 
+        password = '1X<ISRUkw+tuK'
+
         self.admin = {
             'username': 'admin', 
-            'password': '1X<ISRUkw+tuK',
+            'password': password,
             'is_staff': True,
             'is_active' : True,
             'is_superuser' : True,
@@ -21,14 +23,14 @@ class TestBorrowed(FunctionalTest):
 
         self.user = {
             'username': 'testuser', 
-            'password': '1X<ISRUkw+tuK',
+            'password': password,
         }
 
         User.objects.create_user(**self.admin).save()
         User.objects.create_user(**self.user).save()
 
         # Create two users
-        test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
+        test_user1 = User.objects.create_user(username='testuser1', password=password)
         test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
 
         test_user1.save()
