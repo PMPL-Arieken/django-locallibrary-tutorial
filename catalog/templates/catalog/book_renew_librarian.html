@@ -7,7 +7,7 @@
     
     <form action="" method="post">
         {% csrf_token %}
-        <table>
+        <table aria-label="Renew Book Form">
         {{ form.as_table }}
         </table>
         <input type="submit" value="Submit" />

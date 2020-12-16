@@ -6,7 +6,7 @@
 
 <form method="post" action="{% url 'register' %}">
 {% csrf_token %}
-<table>
+<table aria-label="Register User Form">
 <tr>
     <td>{{ form.email.label_tag }}</td>
     <td>{{ form.email }}</td>
