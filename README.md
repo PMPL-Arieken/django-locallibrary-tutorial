@@ -3,7 +3,6 @@
 ![Unit Test](https://github.com/PMPL-Arieken/django-locallibrary-tutorial/workflows/Unit%20Test/badge.svg)
 [![Coverage](https://codecov.io/github/PMPL-Arieken/django-locallibrary-tutorial/coverage.svg)](https://codecov.io/github/PMPL-Arieken/django-locallibrary-tutorial)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=PMPL-Arieken_django-locallibrary-tutorial&metric=alert_status)](https://sonarcloud.io/dashboard?id=PMPL-Arieken_django-locallibrary-tutorial)
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=PMPL-Arieken_django-locallibrary-tutorial)](https://sonarcloud.io/dashboard?id=PMPL-Arieken_django-locallibrary-tutorial)
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=PMPL-Arieken_django-locallibrary-tutorial)
 
