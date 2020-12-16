@@ -552,7 +552,7 @@ class BorrowBookViewTest(TestCase):
 
 class ReturnBookInstancesViewTest(RenewBookInstancesViewTest):
 
-    def test_redirect_if_not_logged_in(self):
+    def test_page_redirect_if_not_logged_in(self):
         response = self.client.get(reverse('return-book-librarian', kwargs={'pk': self.test_bookinstance1.pk}))
 
         # Manually check redirect (Can't use assertRedirect, because the redirect URL is unpredictable)
