@@ -550,59 +550,11 @@ class BorrowBookViewTest(TestCase):
         self.assertRedirects(response, f'/catalog/borrow/{inst}/fail')
 
 
-class ReturnBookInstancesViewTest(TestCase):
-    def setUp(self):
-        # Create a user
-        test_user1 = User.objects.create_user(username='testuser1',
-                                              password=password1)
-        test_user1.save()
-
-        test_user2 = User.objects.create_user(username='testuser2',
-                                              password=password2)
-        test_user2.save()
-        permission = Permission.objects.get(name=permission_name)
-        test_user2.user_permissions.add(permission)
-        test_user2.save()
-
-        # Create a book
-        test_author = Author.objects.create(first_name='John',
-                                            last_name='Smith')
-        test_genre = Genre.objects.create(name='Fantasy')
-        test_language = Language.objects.create(name='English')
-        test_book = Book.objects.create(
-            title=book_title,
-            summary=book_summary,
-            isbn='ABCDEFG',
-            author=test_author,
-            language=test_language,
-        )
-        # Create genre as a post-step
-        genre_objects_for_book = Genre.objects.all()
-        test_book.genre.set(genre_objects_for_book)
-        test_book.save()
-
-        # Create a BookInstance object for test_user1
-        return_date = datetime.date.today() + datetime.timedelta(days=5)
-        self.test_bookinstance1 = BookInstance.objects.create(
-            book=test_book,
-            imprint=imprint,
-            due_back=return_date,
-            borrower=test_user1,
-            status='o')
-
-        # Create a BookInstance object for test_user2
-        return_date = datetime.date.today() + datetime.timedelta(days=5)
-        self.test_bookinstance2 = BookInstance.objects.create(
-            book=test_book,
-            imprint=imprint,
-            due_back=return_date,
-            borrower=test_user2,
-            status='o')
+class ReturnBookInstancesViewTest(RenewBookInstancesViewTest):
 
     def test_redirect_if_not_logged_in(self):
-        response = self.client.get(
-            reverse('return-book-librarian',
-                    kwargs={'pk': self.test_bookinstance1.pk}))
+        response = self.client.get(reverse('return-book-librarian', kwargs={'pk': self.test_bookinstance1.pk}))
+
         # Manually check redirect (Can't use assertRedirect, because the redirect URL is unpredictable)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith('/accounts/login/'))
