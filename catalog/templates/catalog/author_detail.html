@@ -6,8 +6,8 @@
 <p>{{author.date_of_birth}} - {% if author.date_of_death %}{{author.date_of_death}}{% endif %}</p>
 
 {% if user.is_authenticated %}
-<button><a href="{% url 'author-delete' author.pk %}">Delete</a></button>
-<button><a href="{% url 'author-update' author.pk %}">Update</a></button>
+  <button><a id='delete-author-button' href="{% url 'author-delete' author.pk %}">Delete</a></button>
+  <button><a id='update-author-button' href="{% url 'author-update' author.pk %}">Update</a></button>
 {% endif %}
 
 
