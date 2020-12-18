@@ -10,11 +10,9 @@ class TestAuthorPage(FunctionalTest):
     def setUp(self):
         super().setUp()
 
-        password = '1X<ISRUkw+tuK'
-
         self.user = {
             'username': 'testuser', 
-            'password': password,
+            'password': '1X<ISRUkw+tuK',
             'is_staff': True,
             'is_active' : True,
             'is_superuser' : True,
