@@ -227,8 +227,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
 
 from django.contrib.auth.models import Permission  # Required to grant the permission needed to set a book as returned.
 
-
-class RenewBookInstancesViewTest(TestCase):
+class TestCaseWithFixtures(TestCase):
     def setUp(self):
         # Create a user
         test_user1 = User.objects.create_user(username='testuser1',
@@ -276,6 +275,9 @@ class RenewBookInstancesViewTest(TestCase):
             due_back=return_date,
             borrower=test_user2,
             status='o')
+
+
+class RenewBookInstancesViewTest(TestCaseWithFixtures):
 
     def test_redirect_if_not_logged_in(self):
         response = self.client.get(
@@ -454,6 +456,7 @@ class AuthorCreateViewTest(TestCase):
 
 
 class BorrowBookViewTest(TestCase):
+
     def setUp(self):
         # Create two users
         self.test_user1 = User.objects.create_user(username='testuser1',
@@ -550,7 +553,7 @@ class BorrowBookViewTest(TestCase):
         self.assertRedirects(response, f'/catalog/borrow/{inst}/fail')
 
 
-class ReturnBookInstancesViewTest(RenewBookInstancesViewTest):
+class ReturnBookInstancesViewTest(TestCaseWithFixtures):
 
     def test_page_redirect_if_not_logged_in(self):
         response = self.client.get(reverse('return-book-librarian', kwargs={'pk': self.test_bookinstance1.pk}))
@@ -633,3 +636,60 @@ class ReturnBookInstancesViewTest(RenewBookInstancesViewTest):
         response = self.client.get(
             reverse('return-book-librarian', kwargs={'pk': test_uid}))
         self.assertEqual(response.status_code, 404)
+
+
+class BookMaintainViewTest(TestCaseWithFixtures):
+
+    def setUp(self):
+        # Create two users
+        self.test_user1 = User.objects.create_user(username='testuser1',
+                                                   password=password1)
+        self.test_user1.save()
+
+        # Create a book
+        self.test_author = Author.objects.create(first_name='John',
+                                                 last_name='Smith')
+        self.test_genre = Genre.objects.create(name='Fantasy')
+        self.test_language = Language.objects.create(name='English')
+        self.test_book = Book.objects.create(
+            title=book_title,
+            summary=book_summary,
+            isbn='ABCDEFG',
+            author=self.test_author,
+            language=self.test_language,
+        )
+        # Create genre as a post-step
+        genre_objects_for_book = Genre.objects.all()
+        self.test_book.genre.set(genre_objects_for_book)
+        self.test_book.save()
+
+        # Create 30 BookInstance objects
+        number_of_book_copies = 5
+        for book_copy in range(number_of_book_copies):
+            status = 'a'
+            book_copy = BookInstance.objects.create(
+                book=self.test_book,
+                imprint=imprint,
+                status=status)
+            book_copy.save()
+
+    def test_create_button_for_unauthenticated_users(self):
+        response = self.client.get(reverse('books'))
+        self.assertNotContains(response, 'Create new Book')
+    
+    def test_create_button_for_authenticated_users(self):
+        self.client.login(username='testuser1', password=password1)
+        response = self.client.get(reverse('books'))
+        self.assertContains(response, 'Create new Book')
+
+    def test_update_delete_button_for_unauthenticated_users(self):
+        response = self.client.get(reverse('book-detail',args=[1]))
+        self.assertNotContains(response, 'Update')
+        self.assertNotContains(response, 'Delete')
+
+    def test_update_delete_button_for_authenticated_users(self):
+        self.client.login(username='testuser1', password=password1)
+        response = self.client.get(reverse('book-detail',args=[1]))
+        self.assertContains(response, 'Update')
+        self.assertContains(response, 'Delete')
+

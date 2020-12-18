@@ -17,5 +17,9 @@
     {% else %}
       <p>There are no books in the library.</p>
     {% endif %}       
+  
+    {% if user.is_authenticated %}
+    <button id='create-book-button'><a href="{% url 'book_create' %}">Create new Book</a></button>
+    {% endif %} 
 {% endblock %}
 
