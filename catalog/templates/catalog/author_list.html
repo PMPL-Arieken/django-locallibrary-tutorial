@@ -15,7 +15,9 @@
     </li>
   {% endfor %}
 
-  <button><a href="{% url 'author-create' %}">Create new Author</a></button>
+  {% if user.is_authenticated %}
+    <button><a href="{% url 'author-create' %}">Create new Author</a></button>
+  {% endif %} 
 
  </ul>
 {% else %}
