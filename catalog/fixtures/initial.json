@@ -8,6 +8,26 @@
       "model": "catalog.author",
       "pk": 2,
       "fields": { "first_name": "Andrea", "last_name": "Hirata", "date_of_birth": "1967-10-24" }
+    },
+    {
+      "model": "catalog.genre",
+      "pk": 1,
+      "fields": { "name": "Fiction" }
+    },
+    {
+      "model": "catalog.genre",
+      "pk": 2,
+      "fields": { "name": "Horror" }
+    },
+    {
+      "model": "catalog.language",
+      "pk": 1,
+      "fields": { "name": "English" }
+    },
+    {
+      "model": "catalog.language",
+      "pk": 2,
+      "fields": {  "name": "Bahasa" }
     }
-  ]
+]
   

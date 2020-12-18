@@ -41,4 +41,3 @@ class ReturnBookForm(forms.Form):
             raise ValidationError(_('Invalid date - return in future'))
 
         return data
-

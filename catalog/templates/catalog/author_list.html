@@ -5,7 +5,7 @@
 <h1>Author List</h1>
 
 {% if author_list %}
-  <ul>
+  <ul id='author-list'>
 
   {% for author in author_list %}
     <li>
@@ -19,8 +19,10 @@
 {% else %}
   <p>There are no authors available.</p>
 {% endif %}
-        
-        
+
+{% if user.is_authenticated %}
+<button id='create-author-button'><a href="{% url 'author-create' %}">Create new Author</a></button>
+{% endif %} 
         
 {% endblock %}
 
