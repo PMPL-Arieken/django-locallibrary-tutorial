@@ -1,11 +1,11 @@
 # Django Local Library
 
 ![Unit Test](https://github.com/PMPL-Arieken/django-locallibrary-tutorial/workflows/Unit%20Test/badge.svg)
+![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=PMPL-Arieken/django-locallibrary-tutorial)
 [![Coverage](https://codecov.io/github/PMPL-Arieken/django-locallibrary-tutorial/coverage.svg)](https://codecov.io/github/PMPL-Arieken/django-locallibrary-tutorial)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=PMPL-Arieken_django-locallibrary-tutorial&metric=alert_status)](https://sonarcloud.io/dashboard?id=PMPL-Arieken_django-locallibrary-tutorial)
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=PMPL-Arieken_django-locallibrary-tutorial)
-
 
 Tutorial "Local Library" website written in Django.
 
