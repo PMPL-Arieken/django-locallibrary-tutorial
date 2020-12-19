@@ -44,7 +44,7 @@ class TestBookPage(FunctionalTest):
 
         # Create a book
         test_author = Author.objects.create(first_name='John', last_name='Smith')
-        test_genre = Genre.objects.create(name='Fantasy')
+        Genre.objects.create(name='Fantasy')
         test_language = Language.objects.create(name='English')
         test_book = Book.objects.create(
             title='Book Title',
@@ -155,7 +155,6 @@ class TestBookPage(FunctionalTest):
         delete_button = self.browser.find_element_by_link_text('Update')
         delete_button.click()
 
-        time.sleep(1)
 
         title = self.browser.find_element_by_css_selector('input[name=title]')
         title.clear()
@@ -167,6 +166,6 @@ class TestBookPage(FunctionalTest):
         time.sleep(1)
 
         self.browser.get(self.live_server_url + bookCatalogLink)
-        list = self.browser.find_element_by_id('book-list')
-        rows = list.find_elements_by_tag_name('li')
+        book_list = self.browser.find_element_by_id('book-list')
+        rows = book_list.find_elements_by_tag_name('li')
         self.assertIn('Laskar (Smith, John)', [row.text for row in rows])
