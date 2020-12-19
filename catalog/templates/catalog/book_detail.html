@@ -17,6 +17,11 @@
     {% endif %}
 </p>
 
+{% if user.is_authenticated %}
+  <button><a id='delete-book-button' href="{% url 'book-delete' book.pk %}">Delete</a></button>
+  <button><a id='update-book-button' href="{% url 'book-update' book.pk %}">Update</a></button>
+{% endif %}
+
 <div style="margin-left:20px;margin-top:20px">
 <h4>Copies</h4>
 

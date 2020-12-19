@@ -4,7 +4,7 @@
     <h1>Book List</h1>
 
     {% if book_list %}
-    <ul>
+    <ul id='book-list'>
 
       {% for book in book_list %}
       <li>
@@ -16,6 +16,10 @@
 
     {% else %}
       <p>There are no books in the library.</p>
-    {% endif %}       
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+    <button id='create-book-button'><a href="{% url 'book-create' %}">Create new Book</a></button>
+    {% endif %} 
 {% endblock %}
 
