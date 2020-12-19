@@ -94,8 +94,8 @@ class TestBookPage(FunctionalTest):
         self.setUpBooks()
         self.browser.get(self.live_server_url + bookCatalogLink)
         time.sleep(10)
-        list = self.browser.find_element_by_id('book-list')
-        rows = list.find_elements_by_tag_name('li')
+        book_list = self.browser.find_element_by_id('book-list')
+        rows = book_list.find_elements_by_tag_name('li')
         self.assertIn('Book Title (Smith, John)', [row.text for row in rows])
 
     def test_book_page_create(self):
@@ -127,7 +127,7 @@ class TestBookPage(FunctionalTest):
 
     def test_book_page_delete(self):
         self.setUpBooks()
-        book = Book.objects.get(title='Book Title')
+        book = Book.objects.all()[0]
 
         self.login(self.admin)
         self.browser.get(self.live_server_url + bookDetailsLink + str(book.id))
@@ -146,7 +146,7 @@ class TestBookPage(FunctionalTest):
         
     def test_book_page_update(self):
         self.setUpBooks()
-        book = Book.objects.get(title='Book Title')
+        book = Book.objects.all()[0]
 
         self.login(self.admin)
 
