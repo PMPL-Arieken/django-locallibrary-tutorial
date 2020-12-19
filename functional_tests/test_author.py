@@ -9,16 +9,7 @@ class TestAuthorPage(FunctionalTest):
 
     def setUp(self):
         super().setUp()
-
-        self.user = {
-            'username': 'testuser', 
-            'password': '1X<ISRUkw+tuK',
-            'is_staff': True,
-            'is_active' : True,
-            'is_superuser' : True,
-        }
-
-        User.objects.create_user(**self.user).save()
+        super().userSetup()
 
     def login(self, user):
         self.browser.get(self.live_server_url + "/accounts/login/")
@@ -112,9 +103,6 @@ class TestAuthorPage(FunctionalTest):
         time.sleep(1)
 
         self.browser.get(self.live_server_url + '/catalog/authors')
-
-        time.sleep(10)
-
         list = self.browser.find_element_by_id('author-list')
         rows = list.find_elements_by_tag_name('li')
         self.assertIn('Smith, James (None - )', [row.text for row in rows])
