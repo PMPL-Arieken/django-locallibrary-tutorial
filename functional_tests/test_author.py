@@ -9,16 +9,7 @@ class TestAuthorPage(FunctionalTest):
 
     def setUp(self):
         super().setUp()
-
-        self.user = {
-            'username': 'testuser', 
-            'password': '1X<ISRUkw+tuK',
-            'is_staff': True,
-            'is_active' : True,
-            'is_superuser' : True,
-        }
-
-        User.objects.create_user(**self.user).save()
+        super().userSetup()
 
     def login(self, user):
         self.browser.get(self.live_server_url + "/accounts/login/")
