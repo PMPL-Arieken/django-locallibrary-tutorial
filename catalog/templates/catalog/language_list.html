@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>Language List</h1>
+
+<div style="margin: 20px 0;">
+    <form method="POST" action="{% if update %}{% url 'language_update' %}{% else %}{% url 'language_create' %}{% endif %}">
+      {% csrf_token %}
+      <input type="text" name="language" value="{% if update %}{{ update.name }}{% endif %}" />
+      <input type="hidden" name="id" value="{% if update %}{{ update.id }}{% endif %}" />
+
+      {% if update %}
+        <button id='update-language-button'>Update Language</button>
+      {% else %}
+        <button id='create-language-button'>Create Language</button>
+      {% endif %}
+
+    </form>
+</div>
+
+{% if language_list %}
+  <ul id='language-list'>
+
+  {% for language in language_list %}
+    <li>
+      {{ language }} | 
+      <a href="{% url 'languages' %}?delete={{ language.id }}">Delete</a>
+      <a href="{% url 'languages' %}?update={{ language.id }}">Update</a>
+    </li>
+  {% endfor %}
+
+ </ul>
+{% else %}
+  <p>There are no languages available.</p>
+{% endif %}
+
+{% if error %}
+  {{ error }}
+{% endif %}
+
+{% endblock %}
+

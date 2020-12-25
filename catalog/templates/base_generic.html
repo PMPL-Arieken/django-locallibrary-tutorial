@@ -25,7 +25,13 @@
     <li><a href="{% url 'books' %}">All books</a></li>
     <li><a href="{% url 'authors' %}">All authors</a></li>
   </ul>
- 
+
+  {% if user.is_authenticated and user.is_staff %}
+  <ul class="sidebar-nav">
+    <li><a href="{% url 'languages' %}">Languages</a></li>
+  </ul>
+  {% endif %} 
+
   <ul class="sidebar-nav">
    {% if user.is_authenticated %}
      <li>User: {{ user.get_username }}</li>

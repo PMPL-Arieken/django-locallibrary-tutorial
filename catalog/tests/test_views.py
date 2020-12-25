@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.test import TestCase
 
 # Create your tests here.
@@ -10,6 +11,7 @@ book_title = 'Book Title'
 book_summary = 'My book summary'
 imprint = 'Unlikely Imprint, 2016'
 permission_name = 'Set book as returned'
+
 
 class IndexViewTest(TestCase):
     def test_counts_for_numbooks_numinstances_and_numauthors_on_index(self):
@@ -129,8 +131,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
                              '/accounts/login/?next=/catalog/mybooks/')
 
     def test_logged_in_uses_correct_template(self):
-        login = self.client.login(username='testuser1',
-                                  password=password1)
+        login = self.client.login(username='testuser1', password=password1)
         response = self.client.get(reverse('my-borrowed'))
 
         # Check our user is logged in
@@ -143,8 +144,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
             response, 'catalog/bookinstance_list_borrowed_user.html')
 
     def test_only_borrowed_books_in_list(self):
-        login = self.client.login(username='testuser1',
-                                  password=password1)
+        login = self.client.login(username='testuser1', password=password1)
         response = self.client.get(reverse('my-borrowed'))
 
         # Check our user is logged in
@@ -185,8 +185,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
             copy.status = 'o'
             copy.save()
 
-        login = self.client.login(username='testuser1',
-                                  password=password1)
+        login = self.client.login(username='testuser1', password=password1)
         response = self.client.get(reverse('my-borrowed'))
 
         # Check our user is logged in
@@ -205,8 +204,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
             copy.status = 'o'
             copy.save()
 
-        login = self.client.login(username='testuser1',
-                                  password=password1)
+        login = self.client.login(username='testuser1', password=password1)
         response = self.client.get(reverse('my-borrowed'))
 
         # Check our user is logged in
@@ -227,6 +225,7 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
 
 from django.contrib.auth.models import Permission  # Required to grant the permission needed to set a book as returned.
 
+
 class TestCaseWithFixtures(TestCase):
     def setUp(self):
         # Create a user
@@ -245,13 +244,13 @@ class TestCaseWithFixtures(TestCase):
         test_author = Author.objects.create(first_name='John',
                                             last_name='Smith')
         test_genre = Genre.objects.create(name='Fantasy')
-        test_language = Language.objects.create(name='English')
+        self.test_language = Language.objects.create(name='English')
         test_book = Book.objects.create(
             title=book_title,
             summary=book_summary,
             isbn='ABCDEFG',
             author=test_author,
-            language=test_language,
+            language=self.test_language,
         )
         # Create genre as a post-step
         genre_objects_for_book = Genre.objects.all()
@@ -278,7 +277,6 @@ class TestCaseWithFixtures(TestCase):
 
 
 class RenewBookInstancesViewTest(TestCaseWithFixtures):
-
     def test_redirect_if_not_logged_in(self):
         response = self.client.get(
             reverse('renew-book-librarian',
@@ -288,16 +286,14 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
         self.assertTrue(response.url.startswith('/accounts/login/'))
 
     def test_forbidden_if_logged_in_but_not_correct_permission(self):
-        login = self.client.login(username='testuser1',
-                                  password=password1)
+        login = self.client.login(username='testuser1', password=password1)
         response = self.client.get(
             reverse('renew-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}))
         self.assertEqual(response.status_code, 403)
 
     def test_logged_in_with_permission_borrowed_book(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('renew-book-librarian',
                     kwargs={'pk': self.test_bookinstance2.pk}))
@@ -306,8 +302,7 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
         self.assertEqual(response.status_code, 200)
 
     def test_logged_in_with_permission_another_users_borrowed_book(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('renew-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}))
@@ -316,8 +311,7 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
         self.assertEqual(response.status_code, 200)
 
     def test_uses_correct_template(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('renew-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}))
@@ -327,8 +321,7 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
         self.assertTemplateUsed(response, 'catalog/book_renew_librarian.html')
 
     def test_form_renewal_date_initially_has_date_three_weeks_in_future(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('renew-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}))
@@ -340,8 +333,7 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
                          date_3_weeks_in_future)
 
     def test_form_invalid_renewal_date_past(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
 
         date_in_past = datetime.date.today() - datetime.timedelta(weeks=1)
         response = self.client.post(
@@ -353,8 +345,7 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
                              'Invalid date - renewal in past')
 
     def test_form_invalid_renewal_date_future(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
 
         invalid_date_in_future = datetime.date.today() + datetime.timedelta(
             weeks=5)
@@ -367,8 +358,7 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
                              'Invalid date - renewal more than 4 weeks ahead')
 
     def test_redirects_to_all_borrowed_book_list_on_success(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         valid_date_in_future = datetime.date.today() + datetime.timedelta(
             weeks=2)
         response = self.client.post(
@@ -380,8 +370,7 @@ class RenewBookInstancesViewTest(TestCaseWithFixtures):
     def test_HTTP404_for_invalid_book_if_logged_in(self):
         import uuid
         test_uid = uuid.uuid4()  # unlikely UID to match our bookinstance!
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('renew-book-librarian', kwargs={'pk': test_uid}))
         self.assertEqual(response.status_code, 404)
@@ -413,27 +402,23 @@ class AuthorCreateViewTest(TestCase):
                              '/accounts/login/?next=/catalog/author/create/')
 
     def test_forbidden_if_logged_in_but_not_correct_permission(self):
-        login = self.client.login(username='testuser1',
-                                  password=password1)
+        login = self.client.login(username='testuser1', password=password1)
         response = self.client.get(reverse('author_create'))
         self.assertEqual(response.status_code, 403)
 
     def test_logged_in_with_permission(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(reverse('author_create'))
         self.assertEqual(response.status_code, 200)
 
     def test_uses_correct_template(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(reverse('author_create'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/author_form.html')
 
     def test_form_date_of_death_initially_set_to_expected_date(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(reverse('author_create'))
         self.assertEqual(response.status_code, 200)
 
@@ -444,8 +429,7 @@ class AuthorCreateViewTest(TestCase):
         self.assertEqual(response_date, expected_initial_date)
 
     def test_redirects_to_detail_view_on_success(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.post(reverse('author_create'), {
             'first_name': 'Christian Name',
             'last_name': 'Surname'
@@ -456,7 +440,6 @@ class AuthorCreateViewTest(TestCase):
 
 
 class BorrowBookViewTest(TestCase):
-
     def setUp(self):
         # Create two users
         self.test_user1 = User.objects.create_user(username='testuser1',
@@ -488,10 +471,9 @@ class BorrowBookViewTest(TestCase):
         number_of_book_copies = 5
         for book_copy in range(number_of_book_copies):
             status = 'a'
-            book_copy = BookInstance.objects.create(
-                book=self.test_book,
-                imprint=imprint,
-                status=status)
+            book_copy = BookInstance.objects.create(book=self.test_book,
+                                                    imprint=imprint,
+                                                    status=status)
             book_copy.save()
 
     def test_redirect_if_not_logged_in(self):
@@ -554,25 +536,24 @@ class BorrowBookViewTest(TestCase):
 
 
 class ReturnBookInstancesViewTest(TestCaseWithFixtures):
-
     def test_page_redirect_if_not_logged_in(self):
-        response = self.client.get(reverse('return-book-librarian', kwargs={'pk': self.test_bookinstance1.pk}))
+        response = self.client.get(
+            reverse('return-book-librarian',
+                    kwargs={'pk': self.test_bookinstance1.pk}))
 
         # Manually check redirect (Can't use assertRedirect, because the redirect URL is unpredictable)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith('/accounts/login/'))
 
     def test_forbidden_if_logged_in_but_not_correct_permission(self):
-        login = self.client.login(username='testuser1',
-                                  password=password1)
+        login = self.client.login(username='testuser1', password=password1)
         response = self.client.get(
             reverse('return-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}))
         self.assertEqual(response.status_code, 403)
 
     def test_logged_in_with_permission_borrowed_book(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('return-book-librarian',
                     kwargs={'pk': self.test_bookinstance2.pk}))
@@ -581,8 +562,7 @@ class ReturnBookInstancesViewTest(TestCaseWithFixtures):
         self.assertEqual(response.status_code, 200)
 
     def test_logged_in_with_permission_another_users_borrowed_book(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('return-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}))
@@ -591,8 +571,7 @@ class ReturnBookInstancesViewTest(TestCaseWithFixtures):
         self.assertEqual(response.status_code, 200)
 
     def test_uses_correct_template(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('return-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}))
@@ -602,23 +581,22 @@ class ReturnBookInstancesViewTest(TestCaseWithFixtures):
         self.assertTemplateUsed(response, 'catalog/book_return_librarian.html')
 
     def test_return_with_invalid_date(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
 
         response = self.client.post(
             reverse('return-book-librarian',
                     kwargs={'pk': self.test_bookinstance1.pk}), {
-                        'return_date': datetime.date.today() + datetime.timedelta(days=1),
+                        'return_date':
+                        datetime.date.today() + datetime.timedelta(days=1),
                         'penalty': 0
                     })
         self.assertContains(response, 'Invalid date - return in future')
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, 'form', 'return_date','Invalid date - return in future')
-
+        self.assertFormError(response, 'form', 'return_date',
+                             'Invalid date - return in future')
 
     def test_redirects_to_all_borrowed_book_list_on_success(self):
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
 
         response = self.client.post(
             reverse('return-book-librarian',
@@ -631,32 +609,93 @@ class ReturnBookInstancesViewTest(TestCaseWithFixtures):
     def test_HTTP404_for_invalid_book_if_logged_in(self):
         import uuid
         test_uid = uuid.uuid4()  # unlikely UID to match our bookinstance!
-        login = self.client.login(username='testuser2',
-                                  password=password2)
+        login = self.client.login(username='testuser2', password=password2)
         response = self.client.get(
             reverse('return-book-librarian', kwargs={'pk': test_uid}))
         self.assertEqual(response.status_code, 404)
 
 
 class BookMaintainViewTest(TestCaseWithFixtures):
-
     def test_create_button_for_unauthenticated_users(self):
         response = self.client.get(reverse('books'))
         self.assertNotContains(response, 'Create new Book')
-    
+
     def test_create_button_for_authenticated_users(self):
         self.client.login(username='testuser1', password=password1)
         response = self.client.get(reverse('books'))
         self.assertContains(response, 'Create new Book')
 
     def test_update_delete_button_for_unauthenticated_users(self):
-        response = self.client.get(reverse('book-detail',args=[1]))
+        response = self.client.get(reverse('book-detail', args=[1]))
         self.assertNotContains(response, 'Update')
         self.assertNotContains(response, 'Delete')
 
     def test_update_delete_button_for_authenticated_users(self):
         self.client.login(username='testuser1', password=password1)
-        response = self.client.get(reverse('book-detail',args=[1]))
+        response = self.client.get(reverse('book-detail', args=[1]))
         self.assertContains(response, 'Update')
         self.assertContains(response, 'Delete')
 
+
+import urllib.parse
+
+
+class LanguageMaintainTest(TestCaseWithFixtures):
+    
+    def test_page_language_list_authorized(self):
+        self.client.login(username='testuser2', password=password2)
+        response = self.client.get(reverse('languages'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Create Language")
+
+    def test_page_language_update_authorized(self):
+        self.client.login(username='testuser2', password=password2)
+        response = self.client.get(
+            reverse('languages') + f'?update={self.test_language.id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Update Language")
+
+    def test_page_language_unauthorized(self):
+        urls = [
+            reverse('languages'),
+            reverse('languages') + f'?delete={self.test_language.id}',
+            reverse('languages') + f'?update={self.test_language.id}'
+        ]
+
+        for url in urls:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            redirect_url = reverse(
+                'login') + f'?next={urllib.parse.quote(url)}'
+            self.assertEqual(response.url, redirect_url)
+
+    def test_create_language(self):
+        self.client.login(username='testuser2', password=password2)
+        self.client.post(reverse('language_create'), {'language':'New Language'})
+        self.assertEqual(Language.objects.filter(name='New Language').count(), 1)
+
+    def test_update_language(self):
+        self.client.login(username='testuser2', password=password2)
+        self.client.post(reverse('language_update'), {'id':self.test_language.id, 'language':'New Language'})
+        self.test_language.refresh_from_db()
+        self.assertEqual(self.test_language.name, 'New Language')
+
+
+    def test_delete_language_with_books(self):
+        self.client.login(username='testuser2', password=password2)
+        response = self.client.get(
+            reverse('languages') + f'?delete={self.test_language.id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Language.objects.filter(id=self.test_language.id).count(), 1)
+
+    def test_delete_language_without_books(self):
+        self.client.login(username='testuser2', password=password2)
+        
+        new_lang = Language(name="New Lang")
+        new_lang.save()
+        
+        response = self.client.get(
+            reverse('languages') + f'?delete={new_lang.id}')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Language.objects.filter(id=new_lang.id).count(), 0)
