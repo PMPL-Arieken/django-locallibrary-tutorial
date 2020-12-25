@@ -214,7 +214,8 @@ def return_book_librarian(request, pk):
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Author
+from .models import Author, Language
+from django.core.exceptions import ValidationError
 
 
 class AuthorCreate(PermissionRequiredMixin, CreateView):
@@ -253,3 +254,65 @@ class BookDelete(PermissionRequiredMixin, DeleteView):
     model = Book
     success_url = reverse_lazy('books')
     permission_required = permission_name
+
+
+class LanguageListView(PermissionRequiredMixin, generic.ListView):
+
+    permission_required = permission_name
+    model = Language
+    error = None
+    update = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['error'] = self.error
+        context['update'] = self.update
+        return context
+
+    def get(self, request, *args, **kwargs):            
+        try:
+            lang = request.GET.get('delete')
+            if lang is not None:
+                return self.get_delete(lang, request, *args, **kwargs)
+
+            lang = request.GET.get('update')            
+            if lang is not None:
+                return self.get_update(lang, request, *args, **kwargs)
+
+        except ValidationError as e:
+            self.error = e.message
+
+        return super().get(self, request, *args, **kwargs)
+
+    def get_delete(self, lang, request, *args, **kwargs):
+        if Language.objects.get(id=lang).book_set.count() > 0:
+            raise ValidationError('Some books are still using this language!')
+        else:
+            Language.objects.get(id=lang).delete()
+            return redirect(reverse('languages'))
+
+    def get_update(self, lang, request, *args, **kwargs):
+        self.update = Language.objects.get(id=lang)
+        return super().get(self, request, *args, **kwargs)
+
+class LanguageCreate(PermissionRequiredMixin, generic.View):
+    permission_required = permission_name
+
+    def post(self, request, *args, **kwargs):
+        lang = request.POST.get('language')
+        Language(name=lang).save()
+        return redirect(reverse('languages'))
+
+class LanguageUpdate(PermissionRequiredMixin, generic.View):
+    permission_required = permission_name
+
+    def post(self, request, *args, **kwargs):
+        lang = request.POST.get('id')
+        name = request.POST.get('language')
+        
+        lang_obj = Language.objects.get(id=lang)
+        lang_obj.name = name
+        lang_obj.save()
+        return redirect(reverse('languages'))
+
+        
