@@ -1,7 +1,9 @@
+import time
 import datetime
 from django.utils import timezone
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from catalog.models import Author, Book, BookInstance, Genre, Language
+from selenium.webdriver.common.keys import Keys
 from django.contrib.auth.models import User
 import sys
 from selenium import webdriver
@@ -68,6 +70,18 @@ class FunctionalTest(StaticLiveServerTestCase):
             status = 'o'
             BookInstance.objects.create(book=test_book, imprint='Unlikely Imprint, 2016', due_back=return_date,
                                         borrower=the_borrower, status=status)
+    
+    def login(self, user):
+        self.browser.get(self.live_server_url + "/accounts/login/")
+        username = self.browser.find_element_by_css_selector('input[name=username]')
+        password = self.browser.find_element_by_css_selector('input[name=password]')
+        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+
+        username.send_keys(user['username'])
+        password.send_keys(user['password'])
+
+        submit.send_keys(Keys.ENTER)
+        time.sleep(1)
 
     def tearDown(self):
         self.browser.quit()
