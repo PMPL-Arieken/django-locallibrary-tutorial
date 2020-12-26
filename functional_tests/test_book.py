@@ -1,11 +1,8 @@
-import datetime
 import time
 from .base import FunctionalTest
-from django.utils import timezone
-from catalog.models import Author, Book, BookInstance, Genre, Language
+from catalog.models import Book
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
-from django.contrib.auth.models import User
 
 bookCatalogLink = '/catalog/books/'
 bookDetailsLink = '/catalog/book/'
@@ -13,21 +10,10 @@ bookDetailsLink = '/catalog/book/'
 class TestBookPage(FunctionalTest):
 
     def setUp(self):
-        super().setUp()
-        super().userSetup()
-        super().setUpBooks()
+        return super().setUp()
 
-    def login(self, user):
-        self.browser.get(self.live_server_url + "/accounts/login/")
-        username = self.browser.find_element_by_css_selector('input[name=username]')
-        password = self.browser.find_element_by_css_selector('input[name=password]')
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
-
-        username.send_keys(user['username'])
-        password.send_keys(user['password'])
-
-        submit.send_keys(Keys.ENTER)
-        time.sleep(1)
+    def tearDown(self):
+        return super().tearDown()
 
     def test_book_page_empty(self):
         self.browser.get(self.live_server_url + bookCatalogLink)
@@ -40,14 +26,14 @@ class TestBookPage(FunctionalTest):
     def test_book_page_filled(self):
         self.setUpBooks()
         self.browser.get(self.live_server_url + bookCatalogLink)
-        time.sleep(10)
+        time.sleep(1)
         book_list = self.browser.find_element_by_id('book-list')
         rows = book_list.find_elements_by_tag_name('li')
         self.assertIn('Book Title (Smith, John)', [row.text for row in rows])
 
     def test_book_page_create(self):
-        self.setUpBooks()
         self.login(self.admin)
+        self.setUpBooks()
         self.browser.get(self.live_server_url + '/book/create/')
 
         time.sleep(10)

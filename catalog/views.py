@@ -315,4 +315,61 @@ class LanguageUpdate(PermissionRequiredMixin, generic.View):
         lang_obj.save()
         return redirect(reverse('languages'))
 
+class GenreListView(PermissionRequiredMixin, generic.ListView):
+
+    permission_required = permission_name
+    model = Genre
+    error = None
+    update = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['error'] = self.error
+        context['update'] = self.update
+        return context
+
+    def get(self, request, *args, **kwargs):            
+        try:
+            genre = request.GET.get('delete')
+            if genre is not None:
+                return self.get_delete(genre, request, *args, **kwargs)
+
+            genre = request.GET.get('update')            
+            if genre is not None:
+                return self.get_update(genre, request, *args, **kwargs)
+
+        except ValidationError as e:
+            self.error = e.message
+
+        return super().get(self, request, *args, **kwargs)
+
+    def get_delete(self, lang, request, *args, **kwargs):
+        if Genre.objects.get(id=lang).book_set.count() > 0:
+            raise ValidationError('Some books are still using this genre!')
+        else:
+            Genre.objects.get(id=lang).delete()
+            return redirect(reverse('genres'))
+
+    def get_update(self, lang, request, *args, **kwargs):
+        self.update = Genre.objects.get(id=lang)
+        return super().get(self, request, *args, **kwargs)
+
+class GenreCreate(PermissionRequiredMixin, generic.View):
+    permission_required = permission_name
+
+    def post(self, request, *args, **kwargs):
+        lang = request.POST.get('genre')
+        Genre(name=lang).save()
+        return redirect(reverse('genres'))
+
+class GenreUpdate(PermissionRequiredMixin, generic.View):
+    permission_required = permission_name
+
+    def post(self, request, *args, **kwargs):
+        genre = request.POST.get('id')
+        name = request.POST.get('genre')
         
+        genre_obj = Genre.objects.get(id=genre)
+        genre_obj.name = name
+        genre_obj.save()
+        return redirect(reverse('genres'))

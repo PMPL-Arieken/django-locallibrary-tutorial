@@ -48,11 +48,11 @@ To get this project up and running locally on your computer:
 ## Testing
 Unit Test
 
-      manage.py test catalog
+      python3 manage.py test catalog
 
 Functional Test
 
-      manage.py test functional_tests
+      python3 manage.py test functional_tests
 
 Coverage
 

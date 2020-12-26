@@ -1,5 +1,9 @@
+import time
+import datetime
+from django.utils import timezone
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from catalog.models import Author, Book, BookInstance, Genre, Language
+from selenium.webdriver.common.keys import Keys
 from django.contrib.auth.models import User
 import sys
 from selenium import webdriver
@@ -8,6 +12,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
+        self.userSetup()
 
     def userSetup(self):
         password = '1X<ISRUkw+tuK'
@@ -39,6 +44,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         # Create a book
         test_author = Author.objects.create(first_name='John', last_name='Smith')
+        self.author = test_author
         Genre.objects.create(name='Fantasy')
         test_language = Language.objects.create(name='English')
         test_book = Book.objects.create(
@@ -64,7 +70,25 @@ class FunctionalTest(StaticLiveServerTestCase):
             status = 'o'
             BookInstance.objects.create(book=test_book, imprint='Unlikely Imprint, 2016', due_back=return_date,
                                         borrower=the_borrower, status=status)
+    
+    def login(self, user):
+        self.browser.get(self.live_server_url + "/accounts/login/")
+        username = self.browser.find_element_by_css_selector('input[name=username]')
+        password = self.browser.find_element_by_css_selector('input[name=password]')
+        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+
+        username.send_keys(user['username'])
+        password.send_keys(user['password'])
+
+        submit.send_keys(Keys.ENTER)
+        time.sleep(1)
 
     def tearDown(self):
         self.browser.quit()
+        BookInstance.objects.all().delete()
+        Book.objects.all().delete()
+        Author.objects.all().delete()
+        Genre.objects.all().delete()
+        Language.objects.all().delete()
+        User.objects.all().delete()
 

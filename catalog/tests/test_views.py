@@ -243,7 +243,7 @@ class TestCaseWithFixtures(TestCase):
         # Create a book
         test_author = Author.objects.create(first_name='John',
                                             last_name='Smith')
-        test_genre = Genre.objects.create(name='Fantasy')
+        self.test_genre = Genre.objects.create(name='Fantasy')
         self.test_language = Language.objects.create(name='English')
         test_book = Book.objects.create(
             title=book_title,
@@ -699,3 +699,62 @@ class LanguageMaintainTest(TestCaseWithFixtures):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Language.objects.filter(id=new_lang.id).count(), 0)
+class GenreMaintainTest(TestCaseWithFixtures):
+
+    def test_page_genre_list_authorized(self):
+        self.client.login(username='testuser2', password=password2)
+        response = self.client.get(reverse('genres'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Create Genre")
+
+    def test_page_genre_update_authorized(self):
+        self.client.login(username='testuser2', password=password2)
+        response = self.client.get(
+            reverse('genres') + f'?update={self.test_genre.id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Update Genre")
+
+    def test_page_genre_unauthorized(self):
+        urls = [
+            reverse('genres'),
+            reverse('genres') + f'?delete={self.test_genre.id}',
+            reverse('genres') + f'?update={self.test_genre.id}'
+        ]
+
+        for url in urls:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            redirect_url = reverse(
+                'login') + f'?next={urllib.parse.quote(url)}'
+            self.assertEqual(response.url, redirect_url)
+
+    def test_create_genre(self):
+        self.client.login(username='testuser2', password=password2)
+        self.client.post(reverse('genre_create'), {'genre':'New Genre'})
+        self.assertEqual(Genre.objects.filter(name='New Genre').count(), 1)
+
+    def test_update_genre(self):
+        self.client.login(username='testuser2', password=password2)
+        self.client.post(reverse('genre_update'), {'id':self.test_genre.id, 'genre':'New Genre'})
+        self.test_genre.refresh_from_db()
+        self.assertEqual(self.test_genre.name, 'New Genre')
+
+
+    def test_delete_genre_with_books(self):
+        self.client.login(username='testuser2', password=password2)
+        response = self.client.get(
+            reverse('genres') + f'?delete={self.test_genre.id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Genre.objects.filter(id=self.test_genre.id).count(), 1)
+
+    def test_delete_genre_without_books(self):
+        self.client.login(username='testuser2', password=password2)
+
+        new_genre = Genre(name="New Genre")
+        new_genre.save()
+
+        response = self.client.get(
+            reverse('genres') + f'?delete={new_genre.id}')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Genre.objects.filter(id=new_genre.id).count(), 0)

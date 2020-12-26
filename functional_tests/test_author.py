@@ -1,15 +1,15 @@
-import datetime
 import time
 from .base import FunctionalTest
-from django.utils import timezone
-from catalog.models import Author, Book, BookInstance, Genre, Language
+from catalog.models import Author
 from selenium.webdriver.common.keys import Keys
 from django.contrib.auth.models import User
 class TestAuthorPage(FunctionalTest):
 
     def setUp(self):
-        super().setUp()
-        super().userSetup()
+        return super().setUp()
+
+    def tearDown(self):
+        return super().tearDown()
 
     def login(self, user):
         self.browser.get(self.live_server_url + "/accounts/login/")
@@ -41,12 +41,16 @@ class TestAuthorPage(FunctionalTest):
         self.assertIn('Smith, John (None - )', [row.text for row in rows])
 
     def test_author_page_create(self):
-        self.login(self.user)
+        self.login(self.admin)
         self.browser.get(self.live_server_url + '/author/create/')
+
+        time.sleep(1)
 
         first_name = self.browser.find_element_by_css_selector('input[name=first_name]')
         last_name = self.browser.find_element_by_css_selector('input[name=last_name]')
         date_of_birth = self.browser.find_element_by_css_selector('input[name=date_of_birth]')
+
+        time.sleep(1)
 
         submit = self.browser.find_element_by_css_selector('input[type=submit]')
 
@@ -60,13 +64,11 @@ class TestAuthorPage(FunctionalTest):
         self.assertEqual(header_text, 'Author: Brown, James')
 
     def test_author_page_delete(self):
-        Author.objects.create(first_name='John', last_name='Smith')
+        self.setUpBooks()
 
-        author = Author.objects.get(first_name='John')
+        self.login(self.admin)
 
-        self.login(self.user)
-
-        self.browser.get(self.live_server_url + '/catalog/author/'+ str(author.id))
+        self.browser.get(self.live_server_url + '/catalog/author/'+ str(self.author.id))
 
         delete_button = self.browser.find_element_by_link_text('Delete')
         delete_button.click()
@@ -86,7 +88,7 @@ class TestAuthorPage(FunctionalTest):
 
         author = Author.objects.get(first_name='John')
 
-        self.login(self.user)
+        self.login(self.admin)
 
         self.browser.get(self.live_server_url + '/catalog/author/'+ str(author.id))
 
