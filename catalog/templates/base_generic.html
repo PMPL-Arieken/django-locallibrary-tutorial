@@ -29,8 +29,9 @@
   {% if user.is_authenticated and user.is_staff %}
   <ul class="sidebar-nav">
     <li><a href="{% url 'languages' %}">Languages</a></li>
+    <li><a href="{% url 'genres' %}">Genres</a></li>
   </ul>
-  {% endif %} 
+  {% endif %}
 
   <ul class="sidebar-nav">
    {% if user.is_authenticated %}

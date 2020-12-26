@@ -43,9 +43,15 @@ urlpatterns += [
     path('book/<int:pk>/delete/', views.BookDelete.as_view(), name='book_delete'),
 ]
 
-# Add URLConf to create, update, and delete books
+# Add URLConf to create, update, and delete Language
 urlpatterns += [
     path('languages/', views.LanguageListView.as_view(), name='languages'),
     path('language/create/', views.LanguageCreate.as_view(), name='language_create'),
     path('language/update/', views.LanguageUpdate.as_view(), name='language_update'),
+]
+
+urlpatterns += [
+    path('genres/', views.GenreListView.as_view(), name='genres'),
+    path('genre/create/', views.GenreCreate.as_view(), name='genre_create'),
+    path('genre/update/', views.GenreUpdate.as_view(), name='genre_update'),
 ]

@@ -1,0 +1,42 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>Genre List</h1>
+
+<div style="margin: 20px 0;">
+    <form method="POST" action="{% if update %}{% url 'genre_update' %}{% else %}{% url 'genre_create' %}{% endif %}">
+      {% csrf_token %}
+      <input type="text" name="genre" value="{% if update %}{{ update.name }}{% endif %}" />
+      <input type="hidden" name="id" value="{% if update %}{{ update.id }}{% endif %}" />
+
+      {% if update %}
+        <button id='update-genre-button'>Update Genre</button>
+      {% else %}
+        <button id='create-genre-button'>Create Genre</button>
+      {% endif %}
+
+    </form>
+</div>
+
+{% if genre_list %}
+  <ul id='genre-list'>
+
+  {% for genre in genre_list %}
+    <li>
+      {{ genre }} | 
+      <a href="{% url 'genres' %}?delete={{ genre.id }}">Delete</a>
+      <a href="{% url 'genres' %}?update={{ genre.id }}">Update</a>
+    </li>
+  {% endfor %}
+
+ </ul>
+{% else %}
+  <p>There are no genres available.</p>
+{% endif %}
+
+{% if error %}
+  {{ error }}
+{% endif %}
+
+{% endblock %}
