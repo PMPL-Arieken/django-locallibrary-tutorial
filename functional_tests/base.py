@@ -1,3 +1,5 @@
+import datetime
+from django.utils import timezone
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from catalog.models import Author, Book, BookInstance, Genre, Language
 from django.contrib.auth.models import User
@@ -8,6 +10,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
+        self.userSetup()
 
     def userSetup(self):
         password = '1X<ISRUkw+tuK'
@@ -39,6 +42,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         # Create a book
         test_author = Author.objects.create(first_name='John', last_name='Smith')
+        self.author = test_author
         Genre.objects.create(name='Fantasy')
         test_language = Language.objects.create(name='English')
         test_book = Book.objects.create(
@@ -67,4 +71,10 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
+        BookInstance.objects.all().delete()
+        Book.objects.all().delete()
+        Author.objects.all().delete()
+        Genre.objects.all().delete()
+        Language.objects.all().delete()
+        User.objects.all().delete()
 
