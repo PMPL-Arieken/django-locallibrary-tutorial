@@ -11,18 +11,6 @@ class TestAuthorPage(FunctionalTest):
     def tearDown(self):
         return super().tearDown()
 
-    def login(self, user):
-        self.browser.get(self.live_server_url + "/accounts/login/")
-        username = self.browser.find_element_by_css_selector('input[name=username]')
-        password = self.browser.find_element_by_css_selector('input[name=password]')
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
-
-        username.send_keys(user['username'])
-        password.send_keys(user['password'])
-
-        submit.send_keys(Keys.ENTER)
-        time.sleep(1)
-
     def test_author_page_empty(self):
         self.browser.get(self.live_server_url + '/catalog/authors')
         self.assertEqual(self.browser.title, 'Local Library')
