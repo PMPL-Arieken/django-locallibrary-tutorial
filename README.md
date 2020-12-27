@@ -1,4 +1,4 @@
-# Django Local Library
+# Django Local Library - Arieken
 
 ![Unit Test](https://github.com/PMPL-Arieken/django-locallibrary-tutorial/workflows/Unit%20Test/badge.svg)
 ![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=PMPL-Arieken/django-locallibrary-tutorial)
