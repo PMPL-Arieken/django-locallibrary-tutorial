@@ -9,6 +9,8 @@ bookDetailsLink = '/catalog/book/'
 
 class TestBookPage(FunctionalTest):
 
+    submit_selector = 'input[type=submit]'
+
     def setUp(self):
         return super().setUp()
 
@@ -44,7 +46,7 @@ class TestBookPage(FunctionalTest):
         isbn = self.browser.find_element_by_css_selector('input[name=isbn]')
         genre_box = Select(self.browser.find_element_by_name('genre'))
         language = Select(self.browser.find_element_by_name('language'))
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+        submit = self.browser.find_element_by_css_selector(self.submit_selector)
 
         title.send_keys('Book Title 2')
         author_box.select_by_visible_text('Smith, John')
@@ -67,7 +69,7 @@ class TestBookPage(FunctionalTest):
         delete_button = self.browser.find_element_by_link_text('Delete')
         delete_button.click()
 
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+        submit = self.browser.find_element_by_css_selector(self.submit_selector)
         submit.send_keys(Keys.ENTER)
 
         time.sleep(1)
@@ -93,7 +95,7 @@ class TestBookPage(FunctionalTest):
         title.clear()
         title.send_keys('Laskar')
 
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+        submit = self.browser.find_element_by_css_selector(self.submit_selector)
         submit.send_keys(Keys.ENTER)
 
         time.sleep(1)

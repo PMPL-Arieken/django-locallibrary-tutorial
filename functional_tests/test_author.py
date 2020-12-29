@@ -5,6 +5,9 @@ from selenium.webdriver.common.keys import Keys
 from django.contrib.auth.models import User
 class TestAuthorPage(FunctionalTest):
 
+    author_path = '/catalog/authors'
+    submit_selector = 'input[type=submit]'
+
     def setUp(self):
         return super().setUp()
 
@@ -12,7 +15,7 @@ class TestAuthorPage(FunctionalTest):
         return super().tearDown()
 
     def test_author_page_empty(self):
-        self.browser.get(self.live_server_url + '/catalog/authors')
+        self.browser.get(self.live_server_url + self.author_path)
         self.assertEqual(self.browser.title, 'Local Library')
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertEqual(header_text, 'Author List')
@@ -23,9 +26,9 @@ class TestAuthorPage(FunctionalTest):
     def test_author_page_filled(self):
         Author.objects.create(first_name='John', last_name='Smith')
 
-        self.browser.get(self.live_server_url + '/catalog/authors')
-        list = self.browser.find_element_by_id('author-list')
-        rows = list.find_elements_by_tag_name('li')
+        self.browser.get(self.live_server_url + self.author_path)
+        author_list = self.browser.find_element_by_id('author-list')
+        rows = author_list.find_elements_by_tag_name('li')
         self.assertIn('Smith, John (None - )', [row.text for row in rows])
 
     def test_author_page_create(self):
@@ -40,7 +43,7 @@ class TestAuthorPage(FunctionalTest):
 
         time.sleep(1)
 
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+        submit = self.browser.find_element_by_css_selector(self.submit_selector)
 
         first_name.send_keys('James')
         last_name.send_keys('Brown')
@@ -61,12 +64,12 @@ class TestAuthorPage(FunctionalTest):
         delete_button = self.browser.find_element_by_link_text('Delete')
         delete_button.click()
 
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+        submit = self.browser.find_element_by_css_selector(self.submit_selector)
         submit.send_keys(Keys.ENTER)
 
         time.sleep(1)
 
-        self.browser.get(self.live_server_url + '/catalog/authors')
+        self.browser.get(self.live_server_url + self.author_path)
 
         list_text = self.browser.find_element_by_tag_name('p').text
         self.assertEqual(list_text, 'There are no authors available.')
@@ -87,12 +90,12 @@ class TestAuthorPage(FunctionalTest):
         first_name.clear()
         first_name.send_keys('James')
 
-        submit = self.browser.find_element_by_css_selector('input[type=submit]')
+        submit = self.browser.find_element_by_css_selector(self.submit_selector)
         submit.send_keys(Keys.ENTER)
 
         time.sleep(1)
 
-        self.browser.get(self.live_server_url + '/catalog/authors')
-        list = self.browser.find_element_by_id('author-list')
-        rows = list.find_elements_by_tag_name('li')
+        self.browser.get(self.live_server_url + self.author_path)
+        author_list = self.browser.find_element_by_id('author-list')
+        rows = author_list.find_elements_by_tag_name('li')
         self.assertIn('Smith, James (None - )', [row.text for row in rows])

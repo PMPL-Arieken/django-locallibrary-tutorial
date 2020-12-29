@@ -6,17 +6,6 @@
 
 You have successfully borrow this book:
 
-<p><strong>Title:</strong> {{ book_instance.book.title }}</p>
-<p><strong>Author:</strong> {{ book_instance.book.author }}</p>
-<p><strong>Summary:</strong> {{ book_instance.book.summary }}</p>
-<p><strong>ISBN:</strong> {{ book_instance.book.isbn }}</p>
-<p><strong>Language:</strong> {{ book_instance.book.language }}</p>
-<p><strong>Genre:</strong> {{ book_instance.book.genre.all|join:", " }}</p>
-<p><strong>Book Instance:</strong> {{ book_instance.id }}</p>
-<p><strong>Due Back:</strong> {{ book_instance.due_back }}</p>
-
-<a href="{{ book_instance.book.get_absolute_url }}">
-    Return
-</a>
+{% include 'catalog/borrowbook_detail.html' %}
 
 {% endblock %}
