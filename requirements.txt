@@ -7,5 +7,5 @@ psycopg2-binary==2.8.6
 pytz==2020.4
 selenium==3.141.0
 sqlparse==0.4.1
-urllib3==1.26.2
+urllib3==1.26.6
 whitenoise==5.2.0
